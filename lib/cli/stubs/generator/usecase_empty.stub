@@ -1,0 +1,17 @@
+import 'package:dartz/dartz.dart';
+import 'package:kappa/kappa.dart';
+
+import '{{entityForUsecasePartPath}}';
+
+part '{{usecaseParamsPartPath}}';
+
+class {{usecaseClass}} extends BaseUseCase<NetworkException, {{entityClass}}, NoParams> {
+  {{usecaseClass}}();
+
+  @override
+  Future<Either<NetworkException, Single<{{entityClass}}>>> execute(
+    NoParams params,
+  ) async {
+    return throw UnimplementedError();
+  }
+}

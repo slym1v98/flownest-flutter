@@ -1,0 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:kappa/kappa.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'src/core/core_exporter.dart';
+import 'src/injector.dart';
+
+Future<void> main() async {
+  await Kappa.ensureInitialized(
+    designSize: const Size(390, 844),
+    routerDelegate: AppRoutes().delegate(),
+    routeInformationParser: AppRoutes().defaultRouteParser(),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    onInitServices: () async {
+      await initServices();
+    },
+    providers: [],
+  );
+}

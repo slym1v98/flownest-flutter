@@ -1,0 +1,22 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kappa/kappa.dart';
+
+part '{{eventPartPath}}';
+
+part '{{statePartPath}}';
+
+class {{blocClass}} extends BaseBloc<{{eventClass}}, {{stateClass}}> {
+  {{blocClass}}() : super({{stateInitialClass}}()) {
+    on<Foo{{eventClass}}>((event, emit) async => await _onFoo{{eventClass}}(event, emit));
+  }
+
+  Future<void> _onFoo{{eventClass}}(Foo{{eventClass}} event, Emitter<{{stateClass}}> emit) async {
+    try {
+      emit({{stateLoadingClass}}());
+      // Add your business logic here
+      emit({{stateSuccessClass}}());
+    } catch (e) {
+      emit({{stateFailureClass}}(message: e.toString()));
+    }
+  }
+}

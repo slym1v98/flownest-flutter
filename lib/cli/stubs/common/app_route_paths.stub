@@ -1,0 +1,10 @@
+class AppRoutePaths {
+  static const String initial = '/';
+
+  // static const String main = '/main';
+  // static const String home = 'home';
+  // static const String search = 'search';
+  // static const String bookmark = 'bookmark';
+  // static const String cart = 'cart';
+  // static const String setting = 'setting';
+}

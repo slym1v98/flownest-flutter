@@ -1,0 +1,36 @@
+import 'package:kappa/kappa.dart';
+
+class {{entityClass}} extends BaseEntity {
+  final String? id;
+
+  const {{entityClass}}({
+    this.id,
+  });
+
+  factory {{entityClass}}.empty() => const {{entityClass}}(
+    id: '-',
+  );
+
+  @override
+  List<Object?> get props {
+    return [id];
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+    };
+  }
+
+  factory {{entityClass}}.fromMap(Map<String, dynamic> map) {
+    return {{entityClass}}(
+      id: map['id'],
+    );
+  }
+
+  @override
+  String toString() {
+    return '{{entityClass}}(id: $id)';
+  }
+}

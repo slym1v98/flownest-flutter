@@ -1,0 +1,9 @@
+import 'package:kappa/kappa.dart';
+
+abstract class {{eventClass}} extends BaseEvent {
+  const {{eventClass}}();
+}
+
+class Foo{{eventClass}} extends {{eventClass}} {
+  const Foo{{eventClass}}();
+}

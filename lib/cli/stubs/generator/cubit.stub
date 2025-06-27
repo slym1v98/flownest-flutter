@@ -1,0 +1,17 @@
+import 'package:kappa/kappa.dart';
+
+part '{{statePartPath}}';
+
+class {{cubitClass}} extends BaseCubit<{{stateClass}}> {
+  {{cubitClass}}() : super({{stateInitialClass}}());
+
+  void foo{{cubitClass}}Action() async {
+    try {
+      emit({{stateLoadingClass}}());
+      // Add your business logic here
+      emit({{stateSuccessClass}}());
+    } catch (e) {
+      emit({{stateFailureClass}}(message: e.toString()));
+    }
+  }
+}

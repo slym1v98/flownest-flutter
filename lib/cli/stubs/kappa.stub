@@ -1,0 +1,16 @@
+app_name: "Kappa"
+
+app_locale:
+  default: "vi"
+  fallback: "en"
+  path: "lib/l10n"
+  supported:
+    - "vi"
+    - "en"
+
+app_flavor:
+  application_id: "com.example"
+  bundle_id: "com.example"
+  macos_supported: false
+
+launcher_icon: "assets/images/launcher_icon.png"

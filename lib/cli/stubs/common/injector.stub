@@ -1,0 +1,22 @@
+Future<void> initServices() async {
+  // injector
+    // Register datasources
+    // ..registerLazySingleton<ProductDatasource>(
+    //   () => ProductDatasourceImpl(injector()),
+    // )
+
+    // Register repositories
+    // ..registerLazySingleton<ProductRepository>(
+    //   () => ProductRepositoryImpl(injector()),
+    // )
+
+    // Register usecases
+    // ..registerLazySingleton<GetPopularProductsUsecase>(
+    //   () => GetPopularProductsUsecase(injector()),
+    // )
+
+    // Register cubits
+    // ..registerFactory<PopularProductsCubit>(
+    //   () => PopularProductsCubit(injector()),
+    // );
+}

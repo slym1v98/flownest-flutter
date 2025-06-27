@@ -1,0 +1,32 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'package:kappa/kappa.dart';
+
+import '{{entityForModelPartPath}}';
+
+part '{{modelGPartPath}}';
+
+@JsonSerializable()
+class {{modelClass}} extends BaseModel<{{modelClass}}, {{entityClass}}> {
+  final String? id;
+
+  const {{modelClass}}({
+    this.id,
+  });
+
+  factory {{modelClass}}.fromJson(Map<String, dynamic> json) =>
+      _${{modelClass}}FromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _${{modelClass}}ToJson(this);
+
+  @override
+  List<Object?> get props => [id];
+
+  @override
+  {{entityClass}} toEntity() => {{entityClass}}(id: id);
+
+  @override
+  factory {{modelClass}}.empty() => const {{modelClass}}(
+    id: '-',
+  );
+}

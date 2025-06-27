@@ -1,0 +1,120 @@
+name: kappa
+description: A new Flutter boilerplate project for build clean and scalable flutter project.
+version: 1.0.0
+homepage: https://www.metalbox.tech
+
+environment:
+  sdk: ^3.5.3
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # A
+  another_flutter_splash_screen: ^1.2.1
+  ansicolor: ^2.0.3
+  args: ^2.6.0
+  auto_route: ^9.0.0
+
+  # B
+  bloc: ^8.0.1
+
+  # C
+  cached_network_image: ^3.3.1
+  cached_network_svg_image: ^1.2.0
+  connectivity_plus: ^6.1.1
+  custom_refresh_indicator: ^4.0.1
+
+  # D
+  dartz: ^0.10.0
+  dio: ^5.4.3+1
+  dio_cache_interceptor: ^3.5.0
+  dio_cache_interceptor_isar_store: ^1.0.1
+
+  # E
+  equatable: ^2.0.5
+  encrypt_shared_preferences: ^0.8.4
+
+  # F
+  flex_color_scheme: ^7.3.1
+  flutter_bloc: ^8.1.5
+  flutter_dotenv: ^5.1.0
+  flutter_flavorizr: ^2.2.3
+  flutter_hooks: ^0.20.5
+  flutter_screenutil: ^5.9.3
+  flutter_secure_storage: ^9.2.4
+  flutter_svg: ^2.0.10+1
+  fpdart: ^1.1.0
+
+  # G
+  get_it: ^7.7.0
+
+  # H
+  hydrated_bloc: ^9.1.5
+
+  # I
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+
+  # J
+  json_annotation: ^4.9.0
+
+  # K
+  # L
+  lottie: ^3.1.3
+
+  # M
+  # N
+  # O
+  # P
+  path: ^1.8.0
+  path_provider: ^2.1.3
+  permission_handler: ^11.3.1
+  plugin_platform_interface: ^2.0.2
+  pretty_dio_logger: ^1.3.1
+  provider: ^6.1.0
+
+  # Q
+  # R
+  # S
+  shimmer: ^3.0.0
+  skeletonizer: ^1.4.3
+
+  # T
+  # U
+  upgrader: ^11.3.1
+  url_launcher: ^6.3.1
+
+  # V
+  # W
+  # X
+  xml: ^6.5.0
+
+  # Y
+  yaml: ^3.1.0
+  yaml_writer: ^2.0.1
+
+  # Z
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+  auto_route_generator: ^9.0.0
+  build_runner: ^2.4.9
+  isar_generator: ^3.1.0+1
+  json_serializable: ^6.8.0
+
+dependency_overrides:
+  analyzer: ^6.2.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: tech.metalbox.kappa
+        pluginClass: KappaPlugin
+      ios:
+        pluginClass: KappaPlugin

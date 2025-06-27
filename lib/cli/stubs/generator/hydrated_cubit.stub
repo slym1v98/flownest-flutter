@@ -1,0 +1,35 @@
+import 'package:kappa/kappa.dart';
+
+import '../../../domain/domain_exporter.dart';
+
+part '{{cubitStatePartPath}}';
+
+class {{cubitName}} extends BaseHydratedCubit<{{cubitStateName}}> {
+  {{cubitName}}() : super({{cubitInitialStateName}}());
+
+  void fooAction() async {
+    try {
+      emit({{cubitLoadingStateName}}());
+      // Add your business logic here
+      emit({{cubitLoadedStateName}}());
+    } catch (e) {
+      emit({{cubitFailureStateName}}(message: e.toString()));
+    }
+  }
+
+  @override
+  Map<String, dynamic>? toJson({{cubitStateName}} state) {
+    if (state is {{cubitLoadedStateName}}) {
+      return state.toMap();
+    }
+    return null;
+  }
+
+  @override
+  {{cubitStateName}}? fromJson(Map<String, dynamic> json) {
+    if (false) {
+      return {{cubitLoadedStateName}}.fromMap(json);
+    }
+    return const {{cubitInitialStateName}}();
+  }
+}

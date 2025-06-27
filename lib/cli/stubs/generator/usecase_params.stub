@@ -1,0 +1,11 @@
+part of '{{usecasePartPath}}';
+
+class {{usecaseParamsClass}} extends UseCaseParams {
+  const {{usecaseParamsClass}}();
+
+  @override
+  {{usecaseParamsClass}} fromJson(Map<String, dynamic> json) => const {{usecaseParamsClass}}();
+
+  @override
+  Map<String, dynamic> toJson() => {};
+}

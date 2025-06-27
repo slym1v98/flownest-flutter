@@ -1,0 +1,7 @@
+import 'package:kappa/kappa.dart';
+
+import '{{repositoryForImplPartPath}}';
+
+class {{repositoryImplClass}} extends BaseRepositoryImpl implements {{repositoryClass}} {
+  {{repositoryImplClass}}();
+}

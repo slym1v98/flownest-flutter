@@ -1,0 +1,8 @@
+import 'package:kappa/kappa.dart';
+
+import '{{datasourcePartPath}}';
+
+class {{datasourceImplClass}} extends BaseRemoteDataSourceImpl
+    implements {{datasourceClass}} {
+  {{datasourceImplClass}}(super._dioClient);
+}

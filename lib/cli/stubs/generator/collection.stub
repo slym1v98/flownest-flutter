@@ -1,0 +1,23 @@
+import 'package:isar/isar.dart';
+import 'package:kappa/kappa.dart';
+
+import '{{entityForCollectionPartPath}}';
+
+part '{{collectionGPartPath}}';
+
+@collection
+class {{collectionClass}} extends BaseCollection<{{collectionClass}}, {{entityClass}}> {
+  final Id? id;
+
+  {{collectionClass}}({
+    this.id,
+  });
+
+  @override
+  {{entityClass}} toEntity() => {{entityClass}}(id: id as String);
+
+  @override
+  {{entityClass}} fromEntity({{entityClass}} entity) => {{entityClass}}(
+    id: entity.id as String,
+  );
+}

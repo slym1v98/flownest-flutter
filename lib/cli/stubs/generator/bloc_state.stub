@@ -1,0 +1,43 @@
+part of '{{blocPartPath}}';
+
+abstract class {{stateClass}} extends BaseState {}
+
+class {{stateInitialClass}} extends {{stateClass}} {
+  {{stateInitialClass}}();
+}
+
+class {{stateLoadingClass}} extends {{stateClass}} {
+  {{stateLoadingClass}}();
+}
+
+class {{stateSuccessClass}} extends {{stateClass}} {
+  {{stateSuccessClass}}();
+
+  {{stateSuccessClass}} copyWith() {
+    return {{stateSuccessClass}}();
+  }
+
+  @override
+  List<Object?> get props => [];
+
+  Map<String, dynamic> toMap() {
+    return {};
+  }
+
+  factory {{stateSuccessClass}}.fromMap(Map<String, dynamic> map) {
+    return {{stateSuccessClass}}();
+  }
+}
+
+class {{stateFailureClass}} extends {{stateClass}} {
+  final String message;
+  final bool showDialog;
+
+  {{stateFailureClass}}({
+    required this.message,
+    this.showDialog = false,
+  });
+
+  @override
+  List<Object?> get props => [message, showDialog];
+}
