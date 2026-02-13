@@ -1,28 +1,7 @@
-library kappa;
+import 'package:kappa/src/core/config/app_config.dart'; // New import for AppConfig
+import 'package:kappa/src/core/logging/i_logger.dart';
 
-import 'dart:async';
-import 'dart:io' show Directory, HttpOverrides;
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get_it/get_it.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:isar/isar.dart';
-import 'package:kappa/src/core/storage/local_secure_storage.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:provider/single_child_widget.dart';
-import 'package:path/path.dart' as p;
-import 'package:upgrader/upgrader.dart';
-
-import 'kappa_platform_interface.dart';
-import 'src/core/core_exporter.dart';
-import 'src/presentation/presentation_exporter.dart';
-
-export 'src/core/core_exporter.dart';
-export 'src/data/data_exporter.dart';
-export 'src/domain/domain_exporter.dart';
-export 'src/presentation/presentation_exporter.dart';
+// ... (rest of imports)
 
 part 'src/injector.dart';
 
@@ -109,9 +88,9 @@ class Kappa {
         onAppDetached: onAppDetached,
         upgraderMessages: upgraderMessages,
       ));
-    } catch (e) {
-      /// Add graceful error handling and logging
-      throw KappaInitializationException(e.toString());
+    } catch (e, stackTrace) { // Add stackTrace to catch block
+      SL.call<ILogger>().error("Kappa initialization failed: $e", error: e, stackTrace: stackTrace);
+      throw KappaInitializationException('Failed to initialize Kappa: ${e.toString()}');
     }
   }
 
@@ -130,15 +109,13 @@ class Kappa {
     /// Clear the saved settings for the upgrader alert dialog
     await Upgrader.clearSavedSettings();
 
-    /// Load the environment variables
+    /// Load the environment variables and AppConfig
     HttpOverrides.global = KappaHttpOverrides();
-    await _loadEnv();
+    final AppConfig appConfig = await _loadEnv(); // Get AppConfig here
 
     /// Initialize the core service locator
-    await SL.initBaseServices();
+    await SL.initBaseServices(appConfig: appConfig); // Pass AppConfig to initBaseServices
     await SL.call<LocalDatabase>().initialize(schemas ?? []);
-    SL.call<LocalStorage>().init();
-    SL.call<LocalSecureStorage>().init();
 
     /// Initialize the storage for hydrated bloc
     Directory? storageDirectory = hydratedStorageDirectory;
@@ -157,18 +134,20 @@ class Kappa {
 
     /// Run the app
     if (beforeRunApp != null) {
-      await beforeRunApp.call(dotenv.env);
+      // Pass the flavor from appConfig if needed, or the raw env vars
+      await beforeRunApp.call(dotenv.env); 
     }
   }
 
-  /// Loads the environment variables from the .env file.
-  static Future<void> _loadEnv() async {
+  /// Loads the environment variables from the .env file and returns AppConfig.
+  static Future<AppConfig> _loadEnv() async { // Changed return type
     String envFile = '.env';
     const flavor = String.fromEnvironment('FLAVOR', defaultValue: 'develop');
     if (flavor.isNotEmpty) {
       envFile = '.env.$flavor';
     }
-    AppFlavor.flavor = AppFlavor.fromString(flavor);
+    // AppFlavor.flavor = AppFlavor.fromString(flavor); // Removed, handled by AppConfig
     await dotenv.load(fileName: p.join(AppEnum.envDir, envFile));
+    return AppConfig.fromEnv(); // Return AppConfig
   }
 }

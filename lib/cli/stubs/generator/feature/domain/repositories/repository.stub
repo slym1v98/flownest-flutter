@@ -1,0 +1,6 @@
+import 'package:dartz/dartz.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/domain/entities/{{feature_name_snake}}_entity.dart';
+
+abstract class {{feature_name_pascal}}Repository {
+  Future<Either<Exception, List<{{feature_name_pascal}}Entity>>> get{{feature_name_pascal}}();
+}

@@ -1,0 +1,13 @@
+import 'package:dartz/dartz.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/domain/entities/{{feature_name_snake}}_entity.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/domain/repositories/{{feature_name_snake}}_repository.dart';
+
+class Get{{feature_name_pascal}}UseCase {
+  final {{feature_name_pascal}}Repository repository;
+
+  Get{{feature_name_pascal}}UseCase(this.repository);
+
+  Future<Either<Exception, List<{{feature_name_pascal}}Entity>>> call() {
+    return repository.get{{feature_name_pascal}}();
+  }
+}

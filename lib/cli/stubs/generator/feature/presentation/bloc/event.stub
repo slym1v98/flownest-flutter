@@ -1,0 +1,12 @@
+import 'package:equatable/equatable.dart';
+
+abstract class {{feature_name_pascal}}Event extends Equatable {
+  const {{feature_name_pascal}}Event();
+
+  @override
+  List<Object> get props => [];
+}
+
+class Get{{feature_name_pascal}}DataEvent extends {{feature_name_pascal}}Event {
+  const Get{{feature_name_pascal}}DataEvent();
+}

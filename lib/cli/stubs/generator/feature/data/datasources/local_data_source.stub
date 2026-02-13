@@ -1,0 +1,23 @@
+import 'package:kappa/src/core/storage/i_local_storage.dart';
+
+abstract class {{feature_name_pascal}}LocalDataSource {
+  Future<List<String>?> getLast{{feature_name_pascal}}Data(); // Example method
+  Future<void> cache{{feature_name_pascal}}Data(List<String> data); // Example method
+}
+
+class {{feature_name_pascal}}LocalDataSourceImpl implements {{feature_name_pascal}}LocalDataSource {
+  final ILocalStorage localStorage;
+
+  {{feature_name_pascal}}LocalDataSourceImpl(this.localStorage);
+
+  @override
+  Future<void> cache{{feature_name_pascal}}Data(List<String> data) async {
+    await localStorage.write('cached_{{feature_name_snake}}_data', data.join(',')); // Example
+  }
+
+  @override
+  Future<List<String>?> getLast{{feature_name_pascal}}Data() async {
+    final data = localStorage.read<String>('cached_{{feature_name_snake}}_data'); // Example
+    return data?.split(',');
+  }
+}

@@ -1,0 +1,29 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part '{{model_name_snake}}.g.dart';
+
+@JsonSerializable()
+class {{model_name_pascal}} {
+  // Example properties
+  final String id;
+  final String name;
+
+  {{model_name_pascal}}({
+    required this.id,
+    required this.name,
+  });
+
+  factory {{model_name_pascal}}.fromJson(Map<String, dynamic> json) => _${{model_name_pascal}}FromJson(json);
+  Map<String, dynamic> toJson() => _${{model_name_pascal}}ToJson(this);
+
+  // Optional: Add copyWith for immutability and easy updates
+  {{model_name_pascal}} copyWith({
+    String? id,
+    String? name,
+  }) {
+    return {{model_name_pascal}}(
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
+}

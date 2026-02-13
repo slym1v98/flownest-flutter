@@ -8,6 +8,7 @@ import 'package:yaml/yaml.dart';
 import 'package:yaml_writer/yaml_writer.dart';
 
 import '../src/core/app_enum.dart';
+import 'commander.dart'; // Import Commander for info messages
 import 'kappa_config.dart';
 
 part 'file_generator.dart';
@@ -36,6 +37,7 @@ class Generator {
     Map<String, String>? params,
   }) async {
     if (File(fileName).existsSync() && !force) {
+      Commander.info('File already exists and --force not used: $fileName'); // Add info message
       return;
     }
 
@@ -57,234 +59,139 @@ class Generator {
     );
   }
 
-  static Future<KappaConfig> readYaml(String fileName) async {
-    String yamlString = await File(fileName).readAsString();
-    final yamlMap = loadYaml(yamlString);
-    final map = convertYamlToMap(yamlMap);
-    return KappaConfig.fromMap(map);
-  }
-
-  static Map<String, dynamic> convertYamlToMap(YamlMap yamlMap) {
-    final map = <String, dynamic>{};
-
-    yamlMap.forEach((key, value) {
-      if (value is YamlMap) {
-        map[key.toString()] = convertYamlToMap(value);
-      } else if (value is YamlList) {
-        map[key.toString()] = value.toList();
-      } else {
-        map[key.toString()] = value;
-      }
-    });
-
-    return map;
-  }
-
-  static Future<void> generateYaml(
-    String fileName,
-    Map<String, dynamic> content, {
+  static Future<void> generateFeature(
+    String featureName, {
     bool force = false,
   }) async {
-    if (!force && File(fileName).existsSync()) {
-      return;
-    }
+    final String snakeCaseName = featureName.toLowerCase();
+    final String pascalCaseName = _snakeCaseToPascalCase(snakeCaseName);
 
-    final yamlFile = File(fileName);
-    if (!yamlFile.existsSync()) {
-      yamlFile.createSync(recursive: true);
-    }
-    final yamlWriter = YamlWriter();
-    final modifiedYamlString = yamlWriter.write(content);
-    yamlFile.writeAsStringSync(modifiedYamlString);
-  }
+    final Map<String, String> params = {
+      'feature_name_snake': snakeCaseName,
+      'feature_name_pascal': pascalCaseName,
+    };
 
-  static Future<void> updatePubspecYaml({
-    Map<String, dynamic> Function(Map<String, dynamic>)? modifiedYamlCallback,
-  }) async {
-    final pubspecFile = File('pubspec.yaml');
-    String yamlString = pubspecFile.readAsStringSync();
-    final yamlMap = loadYaml(yamlString);
+    // Define base path for feature
+    final String featureBasePath = 'lib/src/features/$snakeCaseName';
 
-    Map<String, dynamic> modifiedYamlMap = Map<String, dynamic>.from(yamlMap as Map);
+    // Create directories
+    await ensureDirectoryExists('$featureBasePath/data/datasources');
+    await ensureDirectoryExists('$featureBasePath/data/models');
+    await ensureDirectoryExists('$featureBasePath/data/repositories');
+    await ensureDirectoryExists('$featureBasePath/domain/entities');
+    await ensureDirectoryExists('$featureBasePath/domain/usecases');
+    await ensureDirectoryExists('$featureBasePath/presentation/bloc');
+    await ensureDirectoryExists('$featureBasePath/presentation/pages');
 
-    if (!modifiedYamlMap.containsKey('flutter')) {
-      modifiedYamlMap['flutter'] = {
-        'assets': [],
-      };
-    }
-    if (!(modifiedYamlMap['flutter'] as Map).containsKey('assets')) {
-      var flutter = {
-        ...(modifiedYamlMap['flutter'] as Map),
-        'assets': [],
-      };
-      modifiedYamlMap['flutter'] = flutter;
-    }
 
-    Map<String, dynamic> modifiedYamlMapCalled = {};
-    if (modifiedYamlCallback != null) {
-      modifiedYamlMapCalled = modifiedYamlCallback(modifiedYamlMap);
-      modifiedYamlMap = modifiedYamlMapCalled;
-    }
-
-    final yamlWriter = YamlWriter();
-    final modifiedYamlString = yamlWriter.write(modifiedYamlMap);
-
-    pubspecFile.writeAsStringSync(modifiedYamlString);
-  }
-
-  static Future<void> updateXcconfigFile(
-    String filePath,
-    Map<String, String> updates,
-  ) async {
-    final file = File(filePath);
-    if (!await file.exists()) {
-      throw Exception('File not found: $filePath');
-    }
-
-    List<String> lines = await file.readAsLines();
-    updates.forEach((key, value) {
-      bool found = false;
-      for (int i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('#include')) {
-          continue; // Skip #include lines
-        }
-        if (lines[i].startsWith(key)) {
-          lines[i] = '$key=$value';
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        lines.add('$key=$value');
-      }
-    });
-
-    await file.writeAsString(lines.join('\n'));
-  }
-
-  static Future<void> generateIdeaRunConfigurations(
-    String filePath,
-    String flavor,
-  ) async {
-    final file = File(filePath);
-
-    if (!file.existsSync()) {
-      file.createSync(recursive: true);
-    }
-
-    final builder = XmlBuilder();
-
-    builder.element('component', attributes: {'name': 'ProjectRunConfigurationManager'}, nest: () {
-      builder.element('configuration', attributes: {
-        'default': 'false',
-        'name': 'main_$flavor.dart',
-        'type': 'FlutterRunConfigurationType',
-        'factoryName': 'Flutter',
-      }, nest: () {
-        builder.element('option', attributes: {
-          'name': 'buildFlavor',
-          'value': flavor,
-        });
-
-        builder.element('option', attributes: {
-          'name': 'filePath',
-          'value': '\$PROJECT_DIR\$/${AppEnum.libDir}/main.dart',
-        });
-
-        builder.element('option', attributes: {
-          'name': 'additionalArgs',
-          'value': '--dart-define=FLAVOR=$flavor',
-        });
-
-        builder.element('method', attributes: {
-          'v': '2',
-        });
-      });
-    });
-
-    String content = builder.buildDocument().toXmlString(pretty: true);
-    await file.writeAsString(content);
-  }
-
-  static Future<void> updateInfoPlist({
-    required String plistPath,
-    required List<String> localizations,
-  }) async {
-    final file = File(plistPath);
-    if (!file.existsSync()) {
-      throw Exception('Info.plist file not found at $plistPath');
-    }
-
-    final document = XmlDocument.parse(await file.readAsString());
-    final dictElement = document.findAllElements('dict').first;
-
-    // Collect elements to be removed
-    final elementsToRemove = <XmlElement>[];
-    dictElement.findElements('key').where((element) => element.innerText == 'CFBundleLocalizations').forEach((element) {
-      elementsToRemove.add(element);
-      if (element.nextElementSibling != null) {
-        elementsToRemove.add(element.nextElementSibling!);
-      }
-    });
-
-    // Remove collected elements
-    for (var element in elementsToRemove) {
-      element.parent?.children.remove(element);
-    }
-
-    // Create new CFBundleLocalizations element
-    final localizationsKey = XmlElement(XmlName('key'), [], [XmlText('CFBundleLocalizations')]);
-    final localizationsArray = XmlElement(
-      XmlName('array'),
-      [],
-      localizations
-          .map(
-            (locale) => XmlElement(XmlName('string'), [], [XmlText(locale)]),
-          )
-          .toList(),
+    // Generate files from stubs
+    await Commander.info('Generating data layer for $featureName...');
+    await generateFromStub(
+      '$featureBasePath/data/datasources/${snakeCaseName}_remote_data_source.dart',
+      'generator/feature/data/datasources/remote_data_source.stub',
+      force: force,
+      params: params,
+    );
+    await generateFromStub(
+      '$featureBasePath/data/datasources/${snakeCaseName}_local_data_source.dart',
+      'generator/feature/data/datasources/local_data_source.stub',
+      force: force,
+      params: params,
+    );
+    await generateFromStub(
+      '$featureBasePath/data/models/${snakeCaseName}_model.dart',
+      'generator/feature/data/models/model.stub',
+      force: force,
+      params: params,
+    );
+    await generateFromStub(
+      '$featureBasePath/data/repositories/${snakeCaseName}_repository_impl.dart',
+      'generator/feature/data/repositories/repository_impl.stub',
+      force: force,
+      params: params,
     );
 
-    // Add new elements to the dict
-    dictElement.children.add(localizationsKey);
-    dictElement.children.add(localizationsArray);
+    await Commander.info('Generating domain layer for $featureName...');
+    await generateFromStub(
+      '$featureBasePath/domain/entities/${snakeCaseName}_entity.dart',
+      'generator/feature/domain/entities/entity.stub',
+      force: force,
+      params: params,
+    );
+    await generateFromStub(
+      '$featureBasePath/domain/repositories/${snakeCaseName}_repository.dart',
+      'generator/feature/domain/repositories/repository.stub',
+      force: force,
+      params: params,
+    );
+    await generateFromStub(
+      '$featureBasePath/domain/usecases/get_${snakeCaseName}_usecase.dart',
+      'generator/feature/domain/usecases/get_usecase.stub',
+      force: force,
+      params: params,
+    );
 
-    // Write the updated content back to the file
-    await file.writeAsString(
-      document.toXmlString(pretty: true, indent: '  '),
+    await Commander.info('Generating presentation layer for $featureName...');
+    await generateFromStub(
+      '$featureBasePath/presentation/bloc/${snakeCaseName}_bloc.dart',
+      'generator/feature/presentation/bloc/bloc.stub',
+      force: force,
+      params: params,
+    );
+    await generateFromStub(
+      '$featureBasePath/presentation/bloc/${snakeCaseName}_event.dart',
+      'generator/feature/presentation/bloc/event.stub',
+      force: force,
+      params: params,
+    );
+    await generateFromStub(
+      '$featureBasePath/presentation/bloc/${snakeCaseName}_state.dart',
+      'generator/feature/presentation/bloc/state.stub',
+      force: force,
+      params: params,
+    );
+    await generateFromStub(
+      '$featureBasePath/presentation/pages/${snakeCaseName}_page.dart',
+      'generator/feature/presentation/pages/page.stub',
+      force: force,
+      params: params,
+    );
+    await Commander.info('--------------- Feature: $featureName Generated ------------------');
+  }
+
+  static Future<void> generateModel( // NEW METHOD
+    String modelName, {
+    bool force = false,
+  }) async {
+    final String snakeCaseName = modelName.toLowerCase();
+    final String pascalCaseName = _snakeCaseToPascalCase(snakeCaseName);
+
+    final Map<String, String> params = {
+      'model_name_snake': snakeCaseName,
+      'model_name_pascal': pascalCaseName,
+    };
+
+    // Define path for model
+    final String modelFilePath = 'lib/src/data/models/$snakeCaseName/$snakeCaseName.dart';
+
+    // Ensure directory exists
+    await ensureDirectoryExists('lib/src/data/models/$snakeCaseName');
+
+    // Generate model file from stub
+    await Commander.info('Generating model: $modelName...');
+    await generateFromStub(
+      modelFilePath,
+      'generator/model/model.stub', // Stub for model
+      force: force,
+      params: params,
     );
   }
 
-  static String generateAppKey() {
-    final random = Random.secure();
-    final bytes = List<int>.generate(32, (_) => random.nextInt(256));
-    return base64.encode(bytes);
-  }
-
-  static Future<void> ensureDirectoryExists(
-    String path, {
-    bool recursive = true,
-    bool force = false,
-  }) async {
-    final directory = Directory(path);
-    if (force && await directory.exists()) {
-      await directory.delete(recursive: true);
-    }
-    if (!await directory.exists()) {
-      await directory.create(recursive: recursive);
-    }
-  }
-
-  static Future<void> ensureFileExists(
-    String path, {
-    bool force = false,
-    String? content,
-  }) async {
-    final file = File(path);
-    if (force && await file.exists()) {
-      await file.delete();
-    }
-    if (!await file.exists()) {
-      await file.writeAsString(content ?? '');
-    }
+  static String _snakeCaseToPascalCase(String text) {
+    if (text.isEmpty) return '';
+    return text.split('_').map((word) {
+      if (word.isEmpty) return '';
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join();
   }
 }

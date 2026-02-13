@@ -1,0 +1,46 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/presentation/bloc/{{feature_name_snake}}_bloc.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/presentation/bloc/{{feature_name_snake}}_event.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/presentation/bloc/{{feature_name_snake}}_state.dart';
+
+class {{feature_name_pascal}}Page extends StatelessWidget {
+  const {{feature_name_pascal}}Page({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('{{feature_name_pascal}} Feature'),
+      ),
+      body: BlocBuilder<{{feature_name_pascal}}Bloc, {{feature_name_pascal}}State>(
+        builder: (context, state) {
+          if (state is {{feature_name_pascal}}Loading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is {{feature_name_pascal}}Loaded) {
+            return ListView.builder(
+              itemCount: state.data.length,
+              itemBuilder: (context, index) {
+                final item = state.data[index];
+                return ListTile(
+                  title: Text(item.name),
+                  subtitle: Text(item.id),
+                );
+              },
+            );
+          } else if (state is {{feature_name_pascal}}Error) {
+            return Center(child: Text('Error: ${state.message}'));
+          }
+          return Center(
+            child: ElevatedButton(
+              onPressed: () {
+                context.read<{{feature_name_pascal}}Bloc>().add(const Get{{feature_name_pascal}}DataEvent());
+              },
+              child: const Text('Load Data'),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

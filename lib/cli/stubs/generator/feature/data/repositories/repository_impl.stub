@@ -1,0 +1,34 @@
+import 'package:dartz/dartz.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/data/datasources/{{feature_name_snake}}_local_data_source.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/data/datasources/{{feature_name_snake}}_remote_data_source.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/data/models/{{feature_name_snake}}_model.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/domain/entities/{{feature_name_snake}}_entity.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/domain/repositories/{{feature_name_snake}}_repository.dart';
+
+class {{feature_name_pascal}}RepositoryImpl implements {{feature_name_pascal}}Repository {
+  final {{feature_name_pascal}}RemoteDataSource remoteDataSource;
+  final {{feature_name_pascal}}LocalDataSource localDataSource;
+
+  {{feature_name_pascal}}RepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+  });
+
+  @override
+  Future<Either<Exception, List<{{feature_name_pascal}}Entity>>> get{{feature_name_pascal}}() async {
+    try {
+      final remoteData = await remoteDataSource.fetch{{feature_name_pascal}}Data();
+      await localDataSource.cache{{feature_name_pascal}}Data(remoteData); // Cache remote data
+      final entities = remoteData.map((e) => {{feature_name_pascal}}Entity(id: e, name: e)).toList(); // Convert to entity
+      return Right(entities);
+    } catch (e) {
+      // Fallback to local data if remote fails
+      final localData = await localDataSource.getLast{{feature_name_pascal}}Data();
+      if (localData != null && localData.isNotEmpty) {
+        final entities = localData.map((e) => {{feature_name_pascal}}Entity(id: e, name: e)).toList();
+        return Right(entities);
+      }
+      return Left(Exception('Failed to get {{feature_name_pascal}}: $e'));
+    }
+  }
+}

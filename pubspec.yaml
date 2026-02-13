@@ -96,6 +96,8 @@ dependencies:
   yaml_writer: ^2.0.1
 
   # Z
+  logger: ^2.0.2
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,4 @@
+import 'package:kappa/src/core/logging/i_logger.dart'; // Add this import
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -59,15 +60,15 @@ class _KappaMaterialAppState extends State<KappaMaterialApp> with WidgetsBinding
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
-        Logger.info("✅ App quay lại foreground!");
+        SL.call<ILogger>().info("✅ App quay lại foreground!");
         widget.onAppForeground?.call();
         break;
       case AppLifecycleState.paused:
-        Logger.info("⏸️ App vào background!");
+        SL.call<ILogger>().info("⏸️ App vào background!");
         widget.onAppBackground?.call();
         break;
       case AppLifecycleState.detached:
-        Logger.info("❌ App bị đóng!");
+        SL.call<ILogger>().info("❌ App bị đóng!");
         widget.onAppDetached?.call();
         break;
       default:
@@ -88,10 +89,10 @@ class _KappaMaterialAppState extends State<KappaMaterialApp> with WidgetsBinding
           designSize: widget.designSize ?? ScreenUtil.defaultSize,
           child: BlocConsumer<ConnectivityBloc, ConnectivityState>(
             listener: (context, connectivityState) async {
-              Logger.setLevel(Logger.lInfo);
-              Logger.info('Connectivity state: $connectivityState');
+              // Removed: Logger.setLevel(Logger.lInfo); // Log level should be configured on the ILogger instance
+              SL.call<ILogger>().info('Connectivity state: $connectivityState');
               if (connectivityState is ConnectivityFailureState) {
-                Logger.error('Connectivity failure: $connectivityState');
+                SL.call<ILogger>().error('Connectivity failure: $connectivityState');
                 if (widget.onConnectivityFailure != null) {
                   await widget.onConnectivityFailure!.call(context);
                 }

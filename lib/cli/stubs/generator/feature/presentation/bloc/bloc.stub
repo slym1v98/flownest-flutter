@@ -1,0 +1,24 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/domain/usecases/get_{{feature_name_snake}}_usecase.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/presentation/bloc/{{feature_name_snake}}_event.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/presentation/bloc/{{feature_name_snake}}_state.dart';
+
+class {{feature_name_pascal}}Bloc extends Bloc<{{feature_name_pascal}}Event, {{feature_name_pascal}}State> {
+  final Get{{feature_name_pascal}}UseCase get{{feature_name_pascal}}UseCase;
+
+  {{feature_name_pascal}}Bloc({required this.get{{feature_name_pascal}}UseCase}) : super(const {{feature_name_pascal}}Initial()) {
+    on<Get{{feature_name_pascal}}DataEvent>(_onGet{{feature_name_pascal}}Data);
+  }
+
+  Future<void> _onGet{{feature_name_pascal}}Data(
+    Get{{feature_name_pascal}}DataEvent event,
+    Emitter<{{feature_name_pascal}}State> emit,
+  ) async {
+    emit(const {{feature_name_pascal}}Loading());
+    final result = await get{{feature_name_pascal}}UseCase();
+    result.fold(
+      (failure) => emit({{feature_name_pascal}}Error(message: failure.toString())),
+      (data) => emit({{feature_name_pascal}}Loaded(data: data)),
+    );
+  }
+}

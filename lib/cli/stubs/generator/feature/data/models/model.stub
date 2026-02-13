@@ -1,0 +1,17 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/domain/entities/{{feature_name_snake}}_entity.dart';
+
+part '{{feature_name_snake}}_model.g.dart';
+
+@JsonSerializable()
+class {{feature_name_pascal}}Model extends {{feature_name_pascal}}Entity {
+  const {{feature_name_pascal}}Model({required super.id, required super.name});
+
+  factory {{feature_name_pascal}}Model.fromJson(Map<String, dynamic> json) => _${{feature_name_pascal}}ModelFromJson(json);
+  Map<String, dynamic> toJson() => _${{feature_name_pascal}}ModelToJson(this);
+
+  // Example: Convert Model to Entity if needed (though often Model itself extends Entity)
+  {{feature_name_pascal}}Entity toEntity() {
+    return {{feature_name_pascal}}Entity(id: id, name: name);
+  }
+}

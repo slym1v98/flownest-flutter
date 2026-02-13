@@ -1,0 +1,19 @@
+import 'package:kappa/src/core/network/i_http_client.dart';
+
+abstract class {{feature_name_pascal}}RemoteDataSource {
+  Future<List<String>> fetch{{feature_name_pascal}}Data(); // Example method
+}
+
+class {{feature_name_pascal}}RemoteDataSourceImpl implements {{feature_name_pascal}}RemoteDataSource {
+  final IHttpClient client;
+
+  {{feature_name_pascal}}RemoteDataSourceImpl(this.client);
+
+  @override
+  Future<List<String>> fetch{{feature_name_pascal}}Data() async {
+    // Example: Replace with actual API call
+    final response = await client.get('/{{feature_name_snake}}');
+    // Process response and return data
+    return (response as List).map((e) => e.toString()).toList();
+  }
+}

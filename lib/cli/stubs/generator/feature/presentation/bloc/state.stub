@@ -1,0 +1,35 @@
+import 'package:equatable/equatable.dart';
+import 'package:kappa/src/features/{{feature_name_snake}}/domain/entities/{{feature_name_snake}}_entity.dart';
+
+abstract class {{feature_name_pascal}}State extends Equatable {
+  const {{feature_name_pascal}}State();
+
+  @override
+  List<Object> get props => [];
+}
+
+class {{feature_name_pascal}}Initial extends {{feature_name_pascal}}State {
+  const {{feature_name_pascal}}Initial();
+}
+
+class {{feature_name_pascal}}Loading extends {{feature_name_pascal}}State {
+  const {{feature_name_pascal}}Loading();
+}
+
+class {{feature_name_pascal}}Loaded extends {{feature_name_pascal}}State {
+  final List<{{feature_name_pascal}}Entity> data;
+
+  const {{feature_name_pascal}}Loaded({required this.data});
+
+  @override
+  List<Object> get props => [data];
+}
+
+class {{feature_name_pascal}}Error extends {{feature_name_pascal}}State {
+  final String message;
+
+  const {{feature_name_pascal}}Error({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
