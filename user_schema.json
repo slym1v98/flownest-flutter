@@ -1,0 +1,21 @@
+{
+  "name": "User",
+  "fields": {
+    "id": "String",
+    "name": "String",
+    "email": "String",
+    "age": "int"
+  },
+  "endpoints": {
+    "getUsers": {
+      "method": "GET",
+      "path": "/users",
+      "responseType": "List<UserModel>"
+    },
+    "getUserProfile": {
+      "method": "GET",
+      "path": "/profile",
+      "responseType": "UserModel"
+    }
+  }
+}

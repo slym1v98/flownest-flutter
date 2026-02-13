@@ -7,6 +7,10 @@ class DioHttpClient implements IHttpClient {
 
   DioHttpClient(this._dio);
 
+  void addInterceptor(Interceptor interceptor) {
+    _dio.interceptors.add(interceptor);
+  }
+
   @override
   Future<dynamic> delete(String path, {dynamic data, Map<String, dynamic>? queryParameters, Map<String, dynamic>? headers}) async {
     try {

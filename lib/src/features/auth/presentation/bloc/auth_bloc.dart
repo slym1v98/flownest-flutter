@@ -33,7 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     _logger.info('AppStarted event received, checking auth status...');
-    final result = await getAuthStatusUseCase();
+    final result = await getAuthStatusUseCase.execute(const NoParams());
     result.fold(
       (failure) {
         _logger.error('Failed to get auth status on app start: ${failure.toString()}');
@@ -57,7 +57,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     _logger.info('Login requested for email: ${event.email}');
-    final result = await loginUseCase(event.email, event.password);
+    final result = await loginUseCase.execute(LoginParams(email: event.email, password: event.password));
     result.fold(
       (failure) {
         _logger.error('Login failed for email ${event.email}: ${failure.toString()}');
@@ -76,7 +76,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     _logger.info('Registration requested for email: ${event.email}');
-    final result = await registerUseCase(event.email, event.password);
+    final result = await registerUseCase.execute(RegisterParams(email: event.email, password: event.password));
     result.fold(
       (failure) {
         _logger.error('Registration failed for email ${event.email}: ${failure.toString()}');
@@ -95,7 +95,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     _logger.info('Logout requested.');
-    final result = await logoutUseCase();
+    final result = await logoutUseCase.execute(const NoParams());
     result.fold(
       (failure) {
         _logger.error('Logout failed: ${failure.toString()}');

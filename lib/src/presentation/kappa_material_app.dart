@@ -1,4 +1,6 @@
-import 'package:kappa/src/core/logging/i_logger.dart'; // Add this import
+import 'package:kappa/src/core/logging/i_logger.dart';
+import 'package:kappa/src/presentation/utils/kappa_ui.dart';
+import 'package:kappa/src/presentation/widgets/common/loader_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -101,34 +103,37 @@ class _KappaMaterialAppState extends State<KappaMaterialApp> with WidgetsBinding
             builder: (context, appLoaderState) => BlocBuilder<LoaderCubit, LoaderState>(
               builder: (context, loaderState) => BlocBuilder<ThemeCubit, ThemeState>(
                 builder: (context, themeState) => BlocBuilder<LocalizationCubit, LocalizationState>(
-                  builder: (context, localizationState) => MaterialApp.router(
-                    debugShowCheckedModeBanner: false,
-                    theme: widget.lightTheme ?? AppTheme.lightTheme,
-                    darkTheme: widget.darkTheme ?? AppTheme.darkTheme,
-                    themeMode: themeState.themeMode,
-                    locale: localizationState.language,
-                    supportedLocales: localizationState.supportedLanguages,
-                    localizationsDelegates: widget.localizationsDelegates,
-                    routerDelegate: widget.routerDelegate,
-                    routeInformationParser: widget.routeInformationParser,
-                    localeResolutionCallback: (deviceLocale, supportedLocales) {
-                      Locale locale = localizationState.supportedLanguages.firstWhere(
-                        (supportedLocale) => supportedLocale.languageCode == deviceLocale!.languageCode,
-                        orElse: () => localizationState.language,
-                      );
-                      return locale;
-                    },
-                    builder: (context, child) => UpgradeAlert(
-                      upgrader: Upgrader(
-                        languageCode: localizationState.language.languageCode,
-                        messages: widget.upgraderMessages,
-                      ),
-                      child: ConditionalBanner(
-                        condition: AppFlavor.flavor != Flavor.product,
-                        location: BannerLocation.topStart,
-                        message: AppFlavor.nameTagged.toUpperCase(),
-                        color: Color(AppFlavor.color),
-                        child: child!,
+                  builder: (context, localizationState) => LoaderOverlay(
+                    isLoading: loaderState.loading,
+                    child: MaterialApp.router(
+                      scaffoldMessengerKey: KappaUI.scaffoldMessengerKey,
+                      debugShowCheckedModeBanner: false,
+                      theme: context.read<ThemeCubit>().getThemeData(),
+                      themeMode: themeState.themeMode,
+                      locale: localizationState.language,
+                      supportedLocales: localizationState.supportedLanguages,
+                      localizationsDelegates: widget.localizationsDelegates,
+                      routerDelegate: widget.routerDelegate,
+                      routeInformationParser: widget.routeInformationParser,
+                      localeResolutionCallback: (deviceLocale, supportedLocales) {
+                        Locale locale = localizationState.supportedLanguages.firstWhere(
+                          (supportedLocale) => supportedLocale.languageCode == deviceLocale!.languageCode,
+                          orElse: () => localizationState.language,
+                        );
+                        return locale;
+                      },
+                      builder: (context, child) => UpgradeAlert(
+                        upgrader: Upgrader(
+                          languageCode: localizationState.language.languageCode,
+                          messages: widget.upgraderMessages,
+                        ),
+                        child: ConditionalBanner(
+                          condition: AppFlavor.flavor != Flavor.product,
+                          location: BannerLocation.topStart,
+                          message: AppFlavor.nameTagged.toUpperCase(),
+                          color: Color(AppFlavor.color),
+                          child: child!,
+                        ),
                       ),
                     ),
                   ),

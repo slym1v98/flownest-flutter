@@ -1,82 +1,48 @@
-# Getting Started with Kappa Framework
+# Bắt đầu với Kappa Framework (Getting Started)
 
-Welcome to the Kappa Framework! This guide will help you set up your project and start developing powerful Flutter applications quickly.
+Chào mừng bạn đến với Kappa! Hướng dẫn này giúp bạn thiết lập dự án từ đầu.
 
-## 1. Installation
+## 1. Cài đặt
 
-Ensure you have Flutter SDK installed and configured. If not, follow the official Flutter installation guide: [https://flutter.dev/docs/get-started/install](https://flutter.dev/docs/get-started/install)
-
-Clone your project that utilizes the Kappa Framework:
-
+Thêm Kappa vào dự án Flutter:
 ```bash
-git clone your-kappa-project.git
-cd your-kappa-project
+flutter pub add kappa
 ```
 
-Then, get the dependencies:
-
-```bash
-flutter pub get
-```
-
-## 2. Initial Setup
-
-The Kappa Framework provides a command-line interface (CLI) to help you set up and generate code.
-
-To generate the initial `kappa.yaml` configuration file:
-
+## 2. Khởi tạo Dự án
+Sau khi thêm package, bạn cần tạo file cấu hình `kappa.yaml`:
 ```bash
 dart run kappa:generate
 ```
+*Lưu ý: Bạn có thể dùng `dart run kappa:generate interactive` và chọn các tùy chọn khởi tạo.*
 
-If you need to regenerate it and overwrite any existing file, use the `--force` flag:
-
+## 3. Cài đặt Cấu trúc Thư mục
+Để tạo các thư mục `core`, `data`, `domain`, `presentation` và các file mẫu:
 ```bash
-dart run kappa:generate --force
+dart run kappa install
 ```
 
-## 3. Environment Configuration
+## 4. Kiểm tra Cấu hình (Kappa Doctor)
+Sau khi cài đặt, hãy đảm bảo mọi thứ đã sẵn sàng:
+```bash
+dart run kappa doctor
+```
+Lệnh này sẽ kiểm tra:
+- Sự tồn tại của `kappa.yaml`.
+- Các file môi trường `.env`.
+- Cấu trúc `pubspec.yaml`.
 
-Kappa uses `.env` files for environment-specific configurations.
+## 5. Cấu hình Môi trường
+Tạo các file `.env.develop` và `.env.product` trong thư mục gốc. Kappa sẽ tự động tải file tương ứng dựa trên cờ `--dart-define=FLAVOR`.
 
-*   Create `.env` files (e.g., `.env.develop`, `.env.production`) in your project root.
-*   Define variables like `BASE_URL`, `API_KEY`, `ENABLE_ANALYTICS`.
-
-Example `.env.develop`:
-
+Ví dụ `.env.develop`:
 ```dotenv
-BASE_URL=http://dev.api.yourdomain.com
-API_KEY=dev_api_key_123
-ENABLE_ANALYTICS=false
+BASE_URL=https://api-dev.example.com
+API_KEY=dev_key_123
 ```
 
-Your `main.dart` should be configured to load the Kappa framework. Refer to `lib/kappa.dart` documentation for `Kappa.ensureInitialized` usage.
+## 6. Khởi chạy App Runner
+Trong `main.dart`, sử dụng `Kappa.ensureInitialized` để kích hoạt toàn bộ sức mạnh của framework.
 
-## 4. Generating New Features
-
-The Kappa CLI can scaffold entire features, following the Clean Architecture pattern.
-
-To generate a new feature (e.g., named "auth"):
-
-```bash
-dart run kappa:generate feature -n auth
-```
-
-This will create a structured directory within `lib/src/features/auth` including `data`, `domain`, and `presentation` layers with boilerplate code.
-
-## 5. Generating Models
-
-You can also generate individual models:
-
-```bash
-dart run kappa:generate model -n product
-```
-
-This will create `lib/src/data/models/product/product.dart` with boilerplate for JSON serialization (`json_annotation`) and a `copyWith` method.
-
-## What's Next?
-
-*   Explore the [Architecture Overview](architecture_overview.md) to understand the project structure.
-*   Learn about [Configuration Management](configuration.md) for advanced settings.
-*   Dive into specific CLI commands in [CLI Usage](cli_usage.md).
-*   Start implementing your business logic within the generated feature modules!
+---
+Tiếp theo: [Hướng dẫn Sử dụng chi tiết](usage.md)

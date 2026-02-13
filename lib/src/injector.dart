@@ -63,35 +63,19 @@ class SL {
     // Existing: Local Database for local storage (Isar likely)
     injector.registerLazySingleton<LocalDatabase>(LocalDatabase.new);
 
-    // Existing: ConnectivityBloc, LoaderCubit, etc.
+    // Existing: LocalizationCubit, etc.
     injector
       ..registerLazySingleton<ConnectivityBloc>(ConnectivityBloc.new)
       ..registerLazySingleton<LoaderCubit>(LoaderCubit.new)
       ..registerLazySingleton<ThemeCubit>(ThemeCubit.new)
       ..registerLazySingleton<LocalizationCubit>(LocalizationCubit.new);
-  
-    // Auth Feature Registrations
-    injector.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(injector<IHttpClient>()));
-    injector.registerLazySingleton<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(injector<ILocalSecureStorage>()));
-    injector.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(
-          remoteDataSource: injector<AuthRemoteDataSource>(),
-          localDataSource: injector<AuthLocalDataSource>(),
-        ));
+  }
 
-    // Auth Use Cases
-    injector.registerLazySingleton<LoginUseCase>(() => LoginUseCase(injector<AuthRepository>()));
-    injector.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(injector<AuthRepository>()));
-    injector.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(injector<AuthRepository>()));
-    injector.registerLazySingleton<GetAuthStatusUseCase>(() => GetAuthStatusUseCase(injector<AuthRepository>()));
+  static void initFeatureServices(void Function(GetIt i) registration) {
+    registration(injector);
+  }
 
-    // Auth Bloc
-    injector.registerFactory<AuthBloc>(() => AuthBloc(
-          loginUseCase: injector<LoginUseCase>(),
-          registerUseCase: injector<RegisterUseCase>(),
-          logoutUseCase: injector<LogoutUseCase>(),
-          getAuthStatusUseCase: injector<GetAuthStatusUseCase>(),
-        ));
-  
+  static void initAuthFeature() {
     // Auth Feature Registrations
     injector.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(injector<IHttpClient>()));
     injector.registerLazySingleton<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(injector<ILocalSecureStorage>()));

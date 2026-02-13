@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:kappa/kappa.dart';
 import 'package:kappa/src/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:kappa/src/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:kappa/src/features/auth/data/models/auth_model.dart'; // Import AuthModel
@@ -15,43 +16,43 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<Either<Exception, AuthUserEntity>> login(String email, String password) async {
+  Future<Either<BaseException, AuthUserEntity>> login(String email, String password) async {
     try {
       final authModel = await remoteDataSource.login(email, password);
       await localDataSource.saveToken(authModel.token!); // Save token from successful login
       await localDataSource.cacheAuthUser(authModel); // Cache user details
       return Right(authModel); // AuthModel extends AuthUserEntity
     } catch (e) {
-      return Left(Exception('Login failed: ${e.toString()}'));
+      return Left(BaseException(message: 'Login failed: ${e.toString()}'));
     }
   }
 
   @override
-  Future<Either<Exception, AuthUserEntity>> register(String email, String password) async {
+  Future<Either<BaseException, AuthUserEntity>> register(String email, String password) async {
     try {
       final authModel = await remoteDataSource.register(email, password);
       await localDataSource.saveToken(authModel.token!); // Save token from successful registration
       await localDataSource.cacheAuthUser(authModel); // Cache user details
       return Right(authModel);
     } catch (e) {
-      return Left(Exception('Registration failed: ${e.toString()}'));
+      return Left(BaseException(message: 'Registration failed: ${e.toString()}'));
     }
   }
 
   @override
-  Future<Either<Exception, void>> logout() async {
+  Future<Either<BaseException, void>> logout() async {
     try {
       await localDataSource.deleteToken();
       await localDataSource.deleteCachedAuthUser();
       // Optionally, call a remote logout endpoint if exists
       return const Right(null);
     } catch (e) {
-      return Left(Exception('Logout failed: ${e.toString()}'));
+      return Left(BaseException(message: 'Logout failed: ${e.toString()}'));
     }
   }
 
   @override
-  Future<Either<Exception, AuthUserEntity>> getAuthStatus() async {
+  Future<Either<BaseException, AuthUserEntity>> getAuthStatus() async {
     try {
       final cachedUser = await localDataSource.getCachedAuthUser();
       if (cachedUser != null && cachedUser.isAuthenticated) {
@@ -59,7 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return Right(AuthUserEntity.unauthenticated); // No cached valid user
     } catch (e) {
-      return Left(Exception('Failed to get auth status: ${e.toString()}'));
+      return Left(BaseException(message: 'Failed to get auth status: ${e.toString()}'));
     }
   }
 }

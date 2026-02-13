@@ -53,3 +53,14 @@ abstract class BaseUseCase<Exception extends BaseException, Entity extends BaseE
 abstract class BaseUseCaseWithoutException<Entity extends BaseEntity, Params extends UseCaseParams> {
   Future<SingleOrList<Entity>> execute(Params params);
 }
+
+/// A simpler version of BaseUseCase that allows any return type [Type].
+abstract class BaseSimpleUseCase<Exception extends BaseException, Type, Params extends UseCaseParams> {
+  Future<Either<Exception, Type>> execute(Params params);
+}
+
+/// A version of BaseUseCase that doesn't return an exception.
+abstract class BaseSimpleUseCaseWithoutException<Type, Params extends UseCaseParams> {
+  Future<Type> execute(Params params);
+}
+

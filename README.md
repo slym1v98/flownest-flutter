@@ -1,30 +1,66 @@
-# Kappa Flutter Framework
+# Kappa Plugin
 
-The Kappa Flutter Framework is a powerful and opinionated boilerplate designed to accelerate Flutter application development. It provides a predefined clean architecture structure, robust configuration management, and a comprehensive Command Line Interface (CLI) for code generation.
+Một plugin Flutter mạnh mẽ cung cấp giải pháp toàn diện cho Clean Architecture, quản lý trạng thái, và bộ công cụ CLI thông minh để tăng tốc độ phát triển.
 
-## Features
+[![pub version](https://img.shields.io/pub/v/kappa.svg)](https://pub.dev/packages/kappa)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-*   **Clean Architecture:** Built with a layered architecture (Core, Domain, Data, Presentation) for scalability, maintainability, and testability.
-*   **Dependency Injection:** Centralized service locator (GetIt) for managing dependencies.
-*   **State Management:** Integrates Bloc/Cubit for reactive state management.
-*   **Networking:** Abstracted HTTP client using Dio.
-*   **Local Storage:** Abstracted local and secure storage using Shared Preferences and Flutter Secure Storage.
-*   **Configuration Management:** Centralized environment configuration using `.env` files and `AppConfig`.
-*   **Code Generation CLI:** Command-line tools to scaffold features and models, reducing boilerplate.
-*   **Localization & Build Flavors:** Pre-configured support for multi-language applications and environment-specific builds.
-*   **App Lifecycle Management:** Built-in handling for app foreground/background states and upgrade alerts.
-*   **Comprehensive Logging:** Abstracted logging interface for flexible log output.
+## Tính năng nổi bật
 
-## Documentation
+*   **⚡ CLI Tương tác:** Không cần nhớ lệnh phức tạp, chỉ cần `dart run kappa:generate interactive`.
+*   **🏗️ Clean Architecture:** Tự động hóa việc tạo tầng Data, Domain, Presentation.
+*   **🌐 Global Loader & UI:** Tích hợp sẵn Overlay Loader, Theme management và Connectivity handling.
+*   **💉 DI & Service Locator:** Quản lý dependency dễ dàng với hệ thống `SL` được tối ưu.
+*   **🛠️ Tiện ích phát triển:** Các lệnh hỗ trợ `build`, `watch`, và `doctor` để kiểm tra dự án.
 
-Dive deeper into the Kappa Framework:
+## Cài đặt
 
-*   [Getting Started](doc/getting_started.md): How to set up and start using the framework.
-*   [Architecture Overview](doc/architecture_overview.md): Understand the layered architecture and core principles.
-*   [CLI Usage](doc/cli_usage.md): Detailed guide on using the `kappa generate` commands for code scaffolding.
-*   [Configuration Management](doc/configuration.md): Learn about environment variables and `AppConfig`.
+Thêm vào `pubspec.yaml`:
 
-### Author
+```yaml
+dependencies:
+  kappa: ^latest_version
+```
 
-- [Slym175](https://gitlab.com/slym175)
+Sau đó chạy: `flutter pub get`
 
+## Sử dụng CLI (Cực kỳ quan trọng)
+
+Kappa cung cấp bộ công cụ dòng lệnh mạnh mẽ để khởi tạo và quản lý dự án.
+
+### 1. Chế độ Tương tác (Khuyên dùng)
+Dễ dàng tạo Feature, Model, Screen... qua giao diện hỏi-đáp:
+```bash
+dart run kappa:generate interactive
+```
+
+### 2. Các lệnh tiện ích
+Thay vì gõ lệnh dài của Flutter, Kappa cung cấp các phím tắt:
+*   `dart run kappa build`: Chạy build_runner một lần.
+*   `dart run kappa watch`: Chạy build_runner ở chế độ theo dõi.
+*   `dart run kappa doctor`: Kiểm tra cấu hình và sức khỏe của dự án.
+*   `dart run kappa install`: Khởi tạo cấu trúc dự án Kappa lần đầu.
+
+## Sử dụng Runtime
+
+### Khởi tạo App
+```dart
+void main() async {
+  await Kappa.ensureInitialized(
+    designSize: const Size(390, 844),
+    routerDelegate: appRouter.delegate(),
+    routeInformationParser: appRouter.defaultRouteParser(),
+    // ... các cấu hình khác
+  );
+}
+```
+
+### Sử dụng Global Loader
+Để hiển thị/ẩn loading toàn màn hình từ bất kỳ đâu:
+```dart
+SL.call<LoaderCubit>().setLoading(true); // Hiện loading
+SL.call<LoaderCubit>().setLoading(false); // Ẩn loading
+```
+
+---
+Xem chi tiết tại thư mục [/doc](doc/getting_started.md).

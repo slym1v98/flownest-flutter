@@ -1,67 +1,76 @@
-### Usage
+# Hướng dẫn Sử dụng (Usage Guide)
 
-### To generate the project
+Tài liệu này hướng dẫn chi tiết cách sử dụng các thành phần của Kappa Framework.
 
+## 1. Công cụ Dòng lệnh (CLI)
+
+Kappa CLI được thiết kế để giảm thiểu công việc lặp đi lặp lại.
+
+### 1.1. Trình tạo mã Tương tác (Interactive Generator)
+Thay vì sử dụng các cờ (flags) phức tạp, bạn có thể chạy:
 ```bash
-dart run kappa:install 
-  --appName kappa
-  --applicationId tech.metalbox
-  --bundleId tech.metalbox
-  --supportedLocales en
-  --supportedLocales vi
-  --appLocalePath l10n
-  --appLocale vi
-  --fallbackLocale en
-  -f
-  --flavorId
+dart run kappa:generate interactive
+```
+Bạn sẽ được lựa chọn:
+- **Feature**: Tạo toàn bộ các tầng Clean Architecture (Data, Domain, Presentation).
+- **Model**: Tạo Data Model với JSON serialization.
+- **Screen**: Tạo StatelessWidget hoặc StatefulWidget.
+- **Bloc/Cubit**: Tạo quản lý trạng thái.
+- **Repository**: Tạo interface và implementation.
+
+### 1.3. Tạo Feature từ API Schema (Cao cấp)
+Đây là tính năng mạnh mẽ nhất của Kappa, cho phép tạo toàn bộ Feature từ một file JSON mô tả.
+```bash
+dart run kappa api your_schema.json
+```
+**Khả năng của lệnh:**
+- Tự động tạo cấu trúc thư mục Clean Architecture.
+- Sinh class **Entity** với các trường dữ liệu động.
+- Sinh class **Model** kèm logic `toEntity()` và xử lý giá trị mặc định.
+- Sinh **RemoteDataSource** interface.
+- Sinh **Repository Interface** và **Implementation**.
+- Sinh **UseCases** cho từng endpoint.
+- Sinh file **DI Registration** (`<feature>_di.dart`) để đăng ký nhanh các dịch vụ vào Service Locator.
+
+**Cách tích hợp nhanh Feature vừa tạo:**
+Mở file `lib/src/injector.dart` và gọi:
+```dart
+UserDI.init(); // Với "User" là tên feature bạn vừa generate
 ```
 
-Install will generate simple `main.dart` in the lib folder, let's modify it:
+## 2. Thành phần Runtime
+
+### 2.1. Global Loader Overlay
+Kappa tích hợp sẵn một lớp phủ Loading toàn cục trong `KappaMaterialApp`.
+- **Cách dùng**: Truy cập `LoaderCubit` qua Service Locator.
+- **Code**: `SL.call<LoaderCubit>().setLoading(true);`
+
+### 2.2. BaseSimpleUseCase
+Ngoài `BaseUseCase` truyền thống trả về `SingleOrList`, bạn có thể dùng `BaseSimpleUseCase` để trả về bất kỳ kiểu dữ liệu nào (ví dụ: `bool`, `void`, hoặc một Entity đơn lẻ).
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kappa/kappa.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import 'src/core/core_exporter.dart';
-import 'src/presentation/presentation_exporter.dart';
-import 'src/injector.dart';
-
-Future<void> main() async {
-  await Kappa.ensureInitialized(
-    designSize: const Size(390, 844),
-    routerDelegate: AppRoutes().delegate(),
-    routeInformationParser: AppRoutes().defaultRouteParser(),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    onInitServices: () async {
-      await initServices();
-    },
-    providers: [
-      // BlocProvider(create: (context) => SL.call<AnyInjectableBloc>()),
-    ],
-  );
+class MyUseCase extends BaseSimpleUseCase<BaseException, bool, MyParams> {
+  @override
+  Future<Either<BaseException, bool>> execute(MyParams params) async {
+    // logic ở đây
+  }
 }
 ```
 
-Note:
+### 2.3. Quản lý Service Locator (SL)
+Đăng ký dịch vụ cho từng Feature một cách gọn gàng:
+```dart
+SL.initFeatureServices((i) {
+  i.registerLazySingleton<MyService>(() => MyServiceImpl());
+});
+```
 
-- `--appName` is the name of the app.
-- `--applicationId` is the android application id of the app.
-- `--bundleId` is the ios, macos bundle id of the app.
-- `--supportedLocales` is the supported locales of the app.
-- `--appLocale` is the default locale of the app.
-- `--fallbackLocale` is the fallback locale of the app.
-- `-f` is the flag to force overwrite the existing files.
-- `--flavorId` is the flavor id of the app. It will generate the flavor on application id, bundle id
-  like `com.example.dev` and `com.example.stg`.
-
-### Run build runner
-
+## 3. Quản lý Môi trường
+Chạy ứng dụng với các môi trường khác nhau:
 ```bash
-// For watch mode
-flutter pub run build_runner watch --delete-conflicting-outputs
+# Môi trường Develop
+flutter run --flavor develop --dart-define=FLAVOR=develop
 
-// For build mode
-flutter pub run build_runner build --delete-conflicting-outputs
+# Môi trường Production
+flutter run --flavor product --dart-define=FLAVOR=product
 ```
